@@ -46,13 +46,13 @@ function changeAdmin(address _newAdmin) public onlyAdmin {
     emit newAdmin(_newAdmin);
 }
 
-function changeStakingToken(address _token) public onlyAdmin {
-    if(_token == address(0)) revert AddressZero();
-    if(token == _token) revert SameToken();
+function changeStakingToken(address _newStakingToken) public onlyAdmin {
+    if(_newStakingToken == address(0)) revert AddressZero();
+    if(stakingToken == _newStakingToken) revert SameToken();
 
-    stakingToken = _token;
+    stakingToken = _newStakingToken;
 
-    emit newStakingToken(_token);
+    emit newStakingToken(_newStakingToken);
 }
 
 function stake(uint256 stakingAmount) public {
