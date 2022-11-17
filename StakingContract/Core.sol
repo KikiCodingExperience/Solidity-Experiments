@@ -13,17 +13,23 @@ mapping(address => uint256) public stakedAmount;
 
 mapping(address => uint256) public stakerLockTime;
 
+mapping(address => uint256) public mintedAmount;
+
 mapping(address => bool) public isStaker;
 
 uint256 public immutable stakingLockTime;
 
+address public immutable Kiki;
+
+address public stakingToken;
+
 address public admin;
 
-address public token;
-
-constructor (uint256 _lockTime) {
+constructor (uint256 _lockTime, address _tokenAddress, address _stakingToken) {
     admin = msg.sender;
     stakingLockTime = _lockTime;
+    Kiki = _tokenAddress;
+    stakingToken = _stakingToken;
 }
 
 modifier onlyAdmin() {
@@ -60,6 +66,7 @@ function stake(uint256 stakingAmount) public {
 
     stakedAmount[msg.sender] += stakingAmount;
     stakerLockTime[msg.sender] = block.timestamp;
+    mintedAmount[msg.sender] += stakingAmount;
 
     KikiToken.mint(stakingAmount);
 
@@ -78,5 +85,17 @@ function unstake(uint256 unstakingAmount) public {
     isStaker[msg.sender] = false;
 
     emit unstaker(msg.sender, unstakingAmount);
+}
+
+function claimMintedTokens(uint256 amount) public {
+    if (amount == 0) revert ZeroAmount();
+    if(amount > mintedAmount[msg.sender]) revert InsufficientAmount();
+
+    mintedAmount[msg.sender] -= amount;
+
+    bool success = ERC20(Kiki).transfer(msg.sender, amount);
+    if(!success) revert TransferFailed();
+
+    emit claimedTokens(msg.sender, amount);
 }
 }
