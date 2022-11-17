@@ -19,11 +19,11 @@ modifier onlyCore() {
     _;
 }
 
-function mint(uint256 amount) internal onlyCore {
+function mint(uint256 amount) public onlyCore {
     _mint(msg.sender, amount);
 }
 
-function burn(uint256 amount) internal onlyCore {
+function burn(uint256 amount) public onlyCore {
     _burn(msg.sender, amount);
 }
 
