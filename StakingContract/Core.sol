@@ -5,7 +5,6 @@ import "Solidity-Experiments/StakingContract/Token.sol";
 import "Solidity-Experiments/StakingContract/CustomErrors.sol";
 import "Solidity-Experiments/StakingContract/Events.sol";
 
-
 pragma solidity 0.8.13;
 
 abstract contract Staking is KikiToken, Errors, Events {
