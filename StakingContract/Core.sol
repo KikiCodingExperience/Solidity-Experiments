@@ -7,7 +7,7 @@ import "Solidity-Experiments/StakingContract/Events.sol";
 
 pragma solidity 0.8.13;
 
-abstract contract Staking is KikiToken, Errors, Events {
+contract Staking is KikiToken(address(this)), Errors, Events {
 
 mapping(address => uint256) public stakedAmount;
 
