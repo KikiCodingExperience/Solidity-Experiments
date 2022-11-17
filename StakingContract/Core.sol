@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol";
-import "contracts/Staking/Token.sol";
-import "contracts/Staking/CustomErrors.sol";
-import "contracts/Staking/Events.sol";
+import "Solidity-Experiments/StakingContract/Token.sol";
+import "Solidity-Experiments/StakingContract/CustomErrors.sol";
+import "Solidity-Experiments/StakingContract/Events.sol";
 
 
 pragma solidity 0.8.13;
@@ -51,7 +51,7 @@ function changeStakingToken(address _token) public onlyAdmin {
 }
 
 function stake(uint256 stakingAmount) public {
-    if(stakingAmount == 0)  revert ZeroAmount();
+    if(stakingAmount == 0) revert ZeroAmount();
     if(isStaker[msg.sender] != false) revert AlreadyStaker();
 
     isStaker[msg.sender] = true;
@@ -68,7 +68,7 @@ function stake(uint256 stakingAmount) public {
 }
 
 function unstake(uint256 unstakingAmount) public {
-    if(block.timestamp > stakerLockTime[msg.sender] + stakingLockTime) revert LockTimeNotFinished();
+    if(block.timestamp < stakerLockTime[msg.sender] + stakingLockTime) revert LockTimeNotFinished();
     if(stakedAmount[msg.sender] != unstakingAmount) revert WrongStakedAmount();
 
     stakedAmount[msg.sender] -= unstakingAmount;
