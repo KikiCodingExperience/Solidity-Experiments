@@ -50,7 +50,7 @@ function changeStakingToken(address _token) public onlyAdmin {
     if(_token == address(0)) revert AddressZero();
     if(token == _token) revert SameToken();
 
-    token = _token;
+    stakingToken = _token;
 
     emit newStakingToken(_token);
 }
