@@ -62,7 +62,7 @@ function stake(uint256 stakingAmount) public {
     isStaker[msg.sender] = true;
 
     bool success = ERC20(token).transferFrom(msg.sender, address(this), stakingAmount);
-    if (!success) revert TransferFailed();
+    if(!success) revert TransferFailed();
 
     stakedAmount[msg.sender] += stakingAmount;
     stakerLockTime[msg.sender] = block.timestamp;
@@ -80,7 +80,7 @@ function unstake(uint256 unstakingAmount) public {
     stakedAmount[msg.sender] -= unstakingAmount;
 
     bool success = ERC20(token).transfer(msg.sender, unstakingAmount);
-    if (!success) revert TransferFailed();
+    if(!success) revert TransferFailed();
 
     isStaker[msg.sender] = false;
 
@@ -88,7 +88,7 @@ function unstake(uint256 unstakingAmount) public {
 }
 
 function claimMintedTokens(uint256 amount) public {
-    if (amount == 0) revert ZeroAmount();
+    if(amount == 0) revert ZeroAmount();
     if(amount > mintedAmount[msg.sender]) revert InsufficientAmount();
 
     mintedAmount[msg.sender] -= amount;
