@@ -8,5 +8,6 @@ event staker(address indexed staker, uint256 stakingAmount);
 event unstaker(address indexed staker, uint256 unstakingAmount);
 event newAdmin(address indexed newAdmin);
 event newStakingToken(address indexed token);
+event claimedTokens(address indexed sender, uint256 amount);
 
 }
