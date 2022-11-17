@@ -15,5 +15,6 @@ error WrongStakedAmount();
 error TransferFailed();
 error NotOwner();
 error SameOwner();
+error InsufficientAmount();
 
 }
