@@ -78,11 +78,11 @@ function unstake(uint256 unstakingAmount) public {
     if(stakedAmount[msg.sender] != unstakingAmount) revert WrongStakedAmount();
 
     stakedAmount[msg.sender] -= unstakingAmount;
+    
+    isStaker[msg.sender] = false;
 
     bool success = ERC20(token).transfer(msg.sender, unstakingAmount);
     if(!success) revert TransferFailed();
-
-    isStaker[msg.sender] = false;
 
     emit unstaker(msg.sender, unstakingAmount);
 }
