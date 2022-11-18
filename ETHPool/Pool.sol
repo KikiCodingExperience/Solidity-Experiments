@@ -43,6 +43,7 @@ function changeOwner(address _newOwner) public onlyOwner {
 
 function depositETH(uint256 amount) public payable {
     if(amount == 0) revert AmountZero();
+    if(msg.value != amount) revert WrongAmount();
 
     deposited[msg.sender] += amount;
     depositer[msg.sender] = true;
@@ -75,6 +76,7 @@ function withdrawETH(uint256 amount) public {
 }
 
 function depositRewards(uint256 amount) public payable onlyOwner {
+    if(msg.value != amount) revert WrongAmount();
 
     depositers.push(msg.sender);
 
