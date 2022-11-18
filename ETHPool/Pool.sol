@@ -51,8 +51,6 @@ function depositETH(uint256 amount) public payable {
 
     depositers.push(msg.sender);
     
-    payable(address(this)).transfer(amount);
-    
     emit deposit(msg.sender, amount);
 }
 
@@ -83,8 +81,6 @@ function depositRewards(uint256 amount) public payable onlyOwner {
     rewards += amount;
 
     depositer[msg.sender] = true;
-
-    payable(address(this)).transfer(amount);
     
     emit depositedRewards(msg.sender, amount);
 }
