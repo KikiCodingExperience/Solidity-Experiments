@@ -44,9 +44,9 @@ function changeOwner(address _newOwner) public onlyOwner {
 function depositETH(uint256 amount) public payable {
     if(amount == 0) revert AmountZero();
 
-    poolBalance += amount;
     deposited[msg.sender] += amount;
     depositer[msg.sender] = true;
+    poolBalance += amount;
 
     depositers.push(msg.sender);
     
@@ -109,7 +109,7 @@ function _distributeRewards(uint256 amount) internal {
     }  
 }
 
-function showPoolBalance() public view returns (uint256){
+function showPoolBalance() public view returns (uint256) {
     if(depositer[msg.sender] != true) revert NotDepositer();
     return poolBalance;
 }
