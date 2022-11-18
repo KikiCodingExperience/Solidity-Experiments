@@ -1,8 +1,10 @@
 // SPDX-License-Identifier: MIT
 
+import "ETHPool/CustomErrors.sol";
+
 pragma solidity 0.8.13;
 
-contract Pool {
+contract Pool is Errors {
 
 address public owner;
 
@@ -25,19 +27,19 @@ constructor (address _owner) {
 }
 
 modifier onlyOwner() {
-    if(owner != msg.sender) revert();
+    if(owner != msg.sender) revert NotOwner();
     _;
 }
 
 function changeOwner(address _newOwner) public onlyOwner {
-    if(_newOwner == address(0)) revert();
-    if(owner == _newOwner) revert();
+    if(_newOwner == address(0)) revert AddressZero();
+    if(owner == _newOwner) revert SameOwner();
 
     owner = _newOwner;
 }
 
 function depositETH(uint256 amount) public payable {
-    if(amount == 0) revert();
+    if(amount == 0) revert AmountZero();
 
     payable(address(this)).transfer(amount);
 
@@ -50,8 +52,8 @@ function depositETH(uint256 amount) public payable {
 }
 
 function withdrawETH(uint256 amount) public {
-    if(depositer[msg.sender] != true) revert();
-    if(amount != deposited[msg.sender]) revert();
+    if(depositer[msg.sender] != true) revert NotDepositer();
+    if(amount != deposited[msg.sender]) revert InsufficientFunds();
 
     if(rewards != 0){
         _distributeRewards(amount);
@@ -101,7 +103,7 @@ function _distributeRewards(uint256 amount) internal {
 }
 
 function showPoolBalance() public view returns (uint256){
-    if(depositer[msg.sender] != true) revert();
+    if(depositer[msg.sender] != true) revert NotDepositer();
     return poolBalance;
 }
 
