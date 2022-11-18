@@ -10,5 +10,6 @@ error SameOwner();
 error AmountZero();
 error NotDepositer();
 error InsufficientFunds();
+error WrongAmount();
 
 }
