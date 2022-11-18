@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: MIT
 
-import "ETHPool/CustomErrors.sol";
+import "Solidity-Experiments/ETHPool/CustomErrors.sol";
+import "Solidity-Experiments/ETHPool/Events.sol";
 
 pragma solidity 0.8.13;
 
-contract Pool is Errors {
+contract Pool is Errors, Events {
 
 address public owner;
 
@@ -36,6 +37,8 @@ function changeOwner(address _newOwner) public onlyOwner {
     if(owner == _newOwner) revert SameOwner();
 
     owner = _newOwner;
+    
+    emit newOwner(msg.sender, _newOwner);
 }
 
 function depositETH(uint256 amount) public payable {
@@ -49,6 +52,8 @@ function depositETH(uint256 amount) public payable {
     depositer[msg.sender] = true;
 
     depositers.push(msg.sender);
+    
+    emit deposit(msg.sender, amount);
 }
 
 function withdrawETH(uint256 amount) public {
@@ -67,6 +72,8 @@ function withdrawETH(uint256 amount) public {
     if(deposited[msg.sender] == 0){
         depositer[msg.sender] = false;
     }
+    
+    emit withdraw(msg.sender, amount);
 }
 
 function depositRewards(uint256 amount) public payable onlyOwner {
@@ -78,6 +85,8 @@ function depositRewards(uint256 amount) public payable onlyOwner {
     depositer[msg.sender] = true;
 
     payable(address(this)).transfer(amount);
+    
+    emit depositedRewards(msg.sender, amount);
 }
 
 function _distributeRewards(uint256 amount) internal {
