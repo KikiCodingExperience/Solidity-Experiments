@@ -19,16 +19,16 @@ modifier onlyLiquidityPool() {
     _;
 }
 
-modifier onlyProvider() {
-    if(!isProvider[msg.sender]) revert();
+modifier onlyProviderTokenA() {
+    if(!isProvider[liquidityTokenA][msg.sender]) revert();
     _;
 }
 
 mapping(address => mapping(address => uint256)) public liquidityProvider;
 
-mapping(address => uint256) public mintedAmount;
+mapping(address => mapping(address => uint256)) public mintedAmount;
 
-mapping(address => bool) public isProvider;
+mapping(address => mapping(address => bool)) public isProvider;
 
 address public owner;
 
@@ -53,15 +53,15 @@ function depositTokenA(uint256 amount) public {
     KikiLP.mint(amount);
 
     liquidityProvider[liquidityTokenA][msg.sender] += amount;
-    mintedAmount[msg.sender] += amount;
+    mintedAmount[liquidityTokenA][msg.sender] += amount;
     poolBalanceTokenA += amount;
 
-    isProvider[msg.sender] = true;
+    isProvider[liquidityTokenA][msg.sender] = true;
 
-    claimMintedAmount();
+    claimMintedAmount(liquidityTokenA);
 }
 
-function withdrawTokenA(address to, uint256 amount) public onlyProvider {
+function withdrawTokenA(address to, uint256 amount) public onlyProviderTokenA {
     if(amount == 0) revert();
     if(amount > liquidityProvider[liquidityTokenA][msg.sender]) revert();
 
@@ -79,11 +79,16 @@ function withdrawTokenA(address to, uint256 amount) public onlyProvider {
     if(!success) revert();
 }
 
-function claimMintedAmount() internal onlyProvider {
+function claimMintedAmount(address token) internal {
     uint256 claimAmount;
-    claimAmount = mintedAmount[msg.sender];
 
-    mintedAmount[msg.sender] -= claimAmount;
+    if(token == liquidityTokenA){
+        claimAmount = mintedAmount[liquidityTokenA][msg.sender];
+        mintedAmount[liquidityTokenA][msg.sender] -= claimAmount;
+    } else {
+        claimAmount = mintedAmount[liquidityTokenB][msg.sender];
+        mintedAmount[liquidityTokenB][msg.sender] -= claimAmount;
+    }
 
     bool success = ERC20(kiki).transfer(msg.sender, claimAmount);
     if(!success) revert();
