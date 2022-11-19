@@ -69,6 +69,10 @@ function withdrawTokenA(address to, uint256 amount) public onlyProviderTokenA {
 
     liquidityProvider[liquidityTokenA][msg.sender] -= amount;
     poolBalanceTokenA -= amount;
+    
+    if(liquidityProvider[liquidityTokenA][msg.sender] == 0){
+        isProvider[liquidityTokenA][msg.sender] = false;
+    }
 
     bool success = ERC20(liquidityTokenA).transfer(to, amount + fee);
     if(!success) revert();
