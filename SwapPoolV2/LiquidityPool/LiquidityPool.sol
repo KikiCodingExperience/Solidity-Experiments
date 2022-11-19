@@ -23,6 +23,11 @@ modifier onlyProviderTokenA() {
     _;
 }
 
+modifier onlyProviderTokenB() {
+    if(!isProvider[liquidityTokenB][msg.sender]) revert();
+    _;
+}
+
 mapping(address => mapping(address => uint256)) public liquidityProvider;
 
 mapping(address => mapping(address => uint256)) public mintedAmount;
@@ -77,6 +82,45 @@ function withdrawTokenA(address to, uint256 amount) public onlyProviderTokenA {
     }
 
     bool success = ERC20(liquidityTokenA).transfer(to, amount + fee);
+    if(!success) revert();
+}
+
+function depositTokenB(uint256 amount) public {
+    if(amount == 0) revert();
+
+    bool success = ERC20(liquidityTokenB).transferFrom(msg.sender, address(this), amount);
+    if(!success) revert();
+
+    KikiLP.mint(amount);
+
+    liquidityProvider[liquidityTokenB][msg.sender] += amount;
+    mintedAmount[liquidityTokenB][msg.sender] += amount;
+    poolBalanceTokenA += amount;
+
+    isProvider[liquidityTokenB][msg.sender] = true;
+
+    claimMintedAmount(liquidityTokenB);
+}
+
+function withdrawTokenB(address to, uint256 amount) public onlyProviderTokenB {
+    if(amount == 0) revert();
+    if(amount > liquidityProvider[liquidityTokenB][msg.sender]) revert();
+
+    require(ERC20(kiki).transferFrom(msg.sender, address(this), amount));
+
+    KikiLP.burn(msg.sender, amount);
+
+    uint256 holderPercent = poolPercentHolder(liquidityTokenB, msg.sender);
+    uint256 fee = feesPerHolder(liquidityTokenB, holderPercent);
+
+    liquidityProvider[liquidityTokenB][msg.sender] -= amount;
+    poolBalanceTokenA -= amount;
+
+    if(liquidityProvider[liquidityTokenB][msg.sender] == 0){
+        isProvider[liquidityTokenB][msg.sender] = false;
+    }
+
+    bool success = ERC20(liquidityTokenB).transfer(to, amount + fee);
     if(!success) revert();
 }
 
