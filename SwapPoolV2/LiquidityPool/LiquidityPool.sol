@@ -8,7 +8,6 @@ pragma solidity 0.8.13;
 contract Pool is KikiLP(address(this)) {
 
 constructor (address _liquidityTokenA, address _liquidityTokenB, address _kikiToken) {
-    owner = msg.sender;
     liquidityTokenA = _liquidityTokenA;
     liquidityTokenB = _liquidityTokenB;
     kiki = _kikiToken;
@@ -29,8 +28,6 @@ mapping(address => mapping(address => uint256)) public liquidityProvider;
 mapping(address => mapping(address => uint256)) public mintedAmount;
 
 mapping(address => mapping(address => bool)) public isProvider;
-
-address public owner;
 
 address public immutable liquidityTokenA;
 
