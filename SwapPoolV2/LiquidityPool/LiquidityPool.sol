@@ -95,7 +95,7 @@ function depositTokenB(uint256 amount) public {
 
     liquidityProvider[liquidityTokenB][msg.sender] += amount;
     mintedAmount[liquidityTokenB][msg.sender] += amount;
-    poolBalanceTokenA += amount;
+    poolBalanceTokenB += amount;
 
     isProvider[liquidityTokenB][msg.sender] = true;
 
@@ -114,7 +114,7 @@ function withdrawTokenB(address to, uint256 amount) public onlyProviderTokenB {
     uint256 fee = feesPerHolder(liquidityTokenB, holderPercent);
 
     liquidityProvider[liquidityTokenB][msg.sender] -= amount;
-    poolBalanceTokenA -= amount;
+    poolBalanceTokenB -= amount;
 
     if(liquidityProvider[liquidityTokenB][msg.sender] == 0){
         isProvider[liquidityTokenB][msg.sender] = false;
