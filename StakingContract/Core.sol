@@ -1,13 +1,14 @@
 // SPDX-License-Identifier: MIT
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol";
+https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol
 import "Solidity-Experiments/StakingContract/Token.sol";
 import "Solidity-Experiments/StakingContract/CustomErrors.sol";
 import "Solidity-Experiments/StakingContract/Events.sol";
 
 pragma solidity 0.8.13;
 
-contract Staking is KikiToken(address(this)), Errors, Events {
+contract Staking is KikiToken(address(this)), Errors, Events, ReentrancyGuard {
 
 mapping(address => uint256) public stakedAmount;
 
@@ -55,25 +56,25 @@ function changeStakingToken(address _newStakingToken) public onlyAdmin {
     emit newStakingToken(_newStakingToken);
 }
 
-function stake(uint256 stakingAmount) public {
+function stake(uint256 stakingAmount) public nonReentrant {
     if(stakingAmount == 0) revert ZeroAmount();
     if(isStaker[msg.sender] != false) revert AlreadyStaker();
 
     isStaker[msg.sender] = true;
-
-    bool success = ERC20(token).transferFrom(msg.sender, address(this), stakingAmount);
-    if(!success) revert TransferFailed();
 
     stakedAmount[msg.sender] += stakingAmount;
     stakerLockTime[msg.sender] = block.timestamp;
     mintedAmount[msg.sender] += stakingAmount;
 
     KikiToken.mint(stakingAmount);
+    
+    bool success = ERC20(token).transferFrom(msg.sender, address(this), stakingAmount);
+    if(!success) revert TransferFailed();
 
     emit staker(msg.sender, stakingAmount);
 }
 
-function unstake(uint256 unstakingAmount) public {
+function unstake(uint256 unstakingAmount) public nonReentrant {
     if(block.timestamp < stakerLockTime[msg.sender] + stakingLockTime) revert LockTimeNotFinished();
     if(stakedAmount[msg.sender] != unstakingAmount) revert WrongStakedAmount();
 
@@ -87,7 +88,7 @@ function unstake(uint256 unstakingAmount) public {
     emit unstaker(msg.sender, unstakingAmount);
 }
 
-function claimMintedTokens(uint256 amount) public {
+function claimMintedTokens(uint256 amount) public nonReentrant {
     if(amount == 0) revert ZeroAmount();
     if(amount > mintedAmount[msg.sender]) revert InsufficientAmount();
 
