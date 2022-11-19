@@ -14,6 +14,11 @@ constructor (address _liquidityTokenA, address _liquidityTokenB, address _kikiTo
     kiki = _kikiToken;
 }
 
+modifier onlyProvider() {
+    if(!isProvider[liquidityTokenA][msg.sender] && !isProvider[liquidityTokenB][msg.sender]) revert();
+    _;
+}
+
 modifier onlyProviderTokenA() {
     if(!isProvider[liquidityTokenA][msg.sender]) revert();
     _;
@@ -78,7 +83,7 @@ function withdrawTokenA(address to, uint256 amount) public onlyProviderTokenA {
     if(!success) revert();
 }
 
-function claimMintedAmount(address token) internal {
+function claimMintedAmount(address token) internal onlyProvider {
     uint256 claimAmount;
 
     if(token == liquidityTokenA){
@@ -93,7 +98,7 @@ function claimMintedAmount(address token) internal {
     if(!success) revert();
 }
 
-function percentPoolHolder(address token, address account) public view returns (uint256){
+function percentPoolHolder(address token, address account) public onlyProvider view returns (uint256){
     uint256 holderAmount;
     uint256 poolPercent;
 
@@ -108,7 +113,7 @@ function percentPoolHolder(address token, address account) public view returns (
     return poolPercent;
 }
 
-function feesPerHolder(address token, uint256 _percent) public view returns (uint256){
+function feesPerHolder(address token, uint256 _percent) public onlyProvider view returns (uint256){
     uint256 balanceWithFees = ERC20(token).balanceOf(address(this));
     uint256 fees;
     uint256 holderFee;
