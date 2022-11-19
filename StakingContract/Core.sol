@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol";
-https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol";
 import "Solidity-Experiments/StakingContract/Token.sol";
 import "Solidity-Experiments/StakingContract/CustomErrors.sol";
 import "Solidity-Experiments/StakingContract/Events.sol";
