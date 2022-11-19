@@ -97,17 +97,17 @@ function claimMintedAmount(address token) internal onlyProvider {
 
 function poolPercentHolder(address token, address account) public onlyProvider view returns (uint256){
     uint256 holderAmount;
-    uint256 poolPercent;
+    uint256 percentHolder;
 
     if(token == liquidityTokenA){
         holderAmount = liquidityProvider[liquidityTokenA][account];
-        poolPercent = (holderAmount / poolBalanceTokenA) * notation;
+        percentHolder = (holderAmount / poolBalanceTokenA) * notation;
     } else {
         holderAmount = liquidityProvider[liquidityTokenB][account];
-        poolPercent = (holderAmount / poolBalanceTokenB) * notation;
+        percentHolder = (holderAmount / poolBalanceTokenB) * notation;
     }
 
-    return poolPercent;
+    return percentHolder;
 }
 
 function feesPerHolder(address token, uint256 _percent) public onlyProvider view returns (uint256){
