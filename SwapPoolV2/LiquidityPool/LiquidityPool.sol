@@ -69,7 +69,7 @@ function withdrawTokenA(address to, uint256 amount) public onlyProviderTokenA {
 
     KikiLP.burn(msg.sender, amount);
 
-    uint256 holderPercent = percentPoolHolder(liquidityTokenA, msg.sender);
+    uint256 holderPercent = poolPercentHolder(liquidityTokenA, msg.sender);
     uint256 fee = feesPerHolder(liquidityTokenA, holderPercent);
 
     liquidityProvider[liquidityTokenA][msg.sender] -= amount;
@@ -98,7 +98,7 @@ function claimMintedAmount(address token) internal onlyProvider {
     if(!success) revert();
 }
 
-function percentPoolHolder(address token, address account) public onlyProvider view returns (uint256){
+function poolPercentHolder(address token, address account) public onlyProvider view returns (uint256){
     uint256 holderAmount;
     uint256 poolPercent;
 
