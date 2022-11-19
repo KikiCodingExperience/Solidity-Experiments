@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: MIT
 
 import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/ERC20.sol";
+import "https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/security/ReentrancyGuard.sol";
 import "KikiV2/LPToken.sol";
 
 pragma solidity 0.8.13;
 
-contract Pool is KikiLP(address(this)) {
+contract Pool is KikiLP(address(this)), ReentrancyGuard {
 
 constructor (address _liquidityTokenA, address _liquidityTokenB, address _kikiToken) {
     liquidityTokenA = _liquidityTokenA;
@@ -46,12 +47,9 @@ uint256 public poolBalanceTokenB;
 
 uint256 public notation;
 
-function depositTokenA(uint256 amount) public {
+function depositTokenA(uint256 amount) public nonReentrant {
     if(amount == 0) revert();
-
-    bool success = ERC20(liquidityTokenA).transferFrom(msg.sender, address(this), amount);
-    if(!success) revert();
-
+    
     KikiLP.mint(amount);
 
     liquidityProvider[liquidityTokenA][msg.sender] += amount;
@@ -61,6 +59,9 @@ function depositTokenA(uint256 amount) public {
     isProvider[liquidityTokenA][msg.sender] = true;
 
     claimMintedAmount(liquidityTokenA);
+    
+    bool success = ERC20(liquidityTokenA).transferFrom(msg.sender, address(this), amount);
+    if(!success) revert();
 }
 
 function withdrawTokenA(address to, uint256 amount) public onlyProviderTokenA {
@@ -85,11 +86,8 @@ function withdrawTokenA(address to, uint256 amount) public onlyProviderTokenA {
     if(!success) revert();
 }
 
-function depositTokenB(uint256 amount) public {
+function depositTokenB(uint256 amount) public nonReentrant {
     if(amount == 0) revert();
-
-    bool success = ERC20(liquidityTokenB).transferFrom(msg.sender, address(this), amount);
-    if(!success) revert();
 
     KikiLP.mint(amount);
 
@@ -100,6 +98,9 @@ function depositTokenB(uint256 amount) public {
     isProvider[liquidityTokenB][msg.sender] = true;
 
     claimMintedAmount(liquidityTokenB);
+    
+    bool success = ERC20(liquidityTokenB).transferFrom(msg.sender, address(this), amount);
+    if(!success) revert();
 }
 
 function withdrawTokenB(address to, uint256 amount) public onlyProviderTokenB {
